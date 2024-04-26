@@ -1,10 +1,11 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"net"
 	"reflect"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestParseAgentModel(t *testing.T) {

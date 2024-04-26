@@ -3,7 +3,7 @@ package sqliteDB
 import (
 	"log/slog"
 
-	"github.com/chronotrax/go-c2/internal/model"
+	"github.com/chronotrax/go-c2/internal/server/model"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -36,7 +36,7 @@ func (s *AgentDB) Insert(model *model.Agent) error {
 	const InsertAgent = `INSERT INTO agents (id, ip) VALUES (?, ?)`
 	result, err := s.DB.Exec(InsertAgent, schema.ID, schema.IP)
 	if err != nil {
-		slog.Error("error inserting agent", slog.String("error", err.Error()))
+		slog.Error("failed to insert agent", slog.String("error", err.Error()))
 		return err
 	}
 

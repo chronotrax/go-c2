@@ -3,10 +3,11 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"modernc.org/sqlite"
 	"net/http"
 
-	"github.com/chronotrax/go-c2/internal/model"
+	"modernc.org/sqlite"
+
+	"github.com/chronotrax/go-c2/internal/server/model"
 
 	"github.com/labstack/echo/v4"
 )

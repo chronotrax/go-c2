@@ -10,64 +10,40 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/chronotrax/go-c2/internal/handler"
-	"github.com/chronotrax/go-c2/internal/model/sqliteDB"
+	"github.com/chronotrax/go-c2/internal/server/config"
+	"github.com/chronotrax/go-c2/internal/server/handler"
+	"github.com/chronotrax/go-c2/internal/server/logging"
+	"github.com/chronotrax/go-c2/internal/server/model/sqliteDB"
+	"github.com/chronotrax/go-c2/internal/server/route"
+
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 //go:embed migrations/*.sql
 var embedMigrations embed.FS
 
 func main() {
-	e := echo.New()
+	// Config
+	conf, err := config.InitConfig()
+	if err != nil {
+		slog.Error("failed getting config, using defaults", slog.String("error", err.Error()))
+	}
+	//goland:noinspection GoDfaErrorMayBeNotNil
+	slog.Info("using config:", slog.String("conf", conf.String()))
 
-	// TODO: .env config
+	// Echo router
+	e := echo.New()
+	e.Debug = conf.Debug
 
 	// Logging
-	var logger *slog.Logger
-	if e.Debug {
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource: true,
-			Level:     slog.LevelDebug,
-		}))
-	} else {
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource: false,
-			Level:     slog.LevelInfo,
-		}))
-	}
-	slog.SetDefault(logger)
-	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		LogStatus:   true,
-		LogURI:      true,
-		LogError:    true,
-		HandleError: true,
-		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			if v.Error == nil {
-				logger.LogAttrs(context.Background(), slog.LevelInfo, "REQUEST",
-					slog.String("uri", v.URI),
-					slog.Int("status", v.Status),
-				)
-			} else {
-				logger.LogAttrs(context.Background(), slog.LevelError, "REQUEST_ERROR",
-					slog.String("uri", v.URI),
-					slog.Int("status", v.Status),
-					slog.String("err", v.Error.Error()),
-				)
-			}
-			return nil
-		},
-	}))
+	logging.InitLogging(e)
 
 	// Dependencies
 	agentDB := sqliteDB.Connect(embedMigrations, "db.sqlite")
 	d := handler.NewDepends(sqliteDB.NewAgentDB(agentDB))
 
 	// Routes
-	e.GET("/ping", handler.Handle(d, handler.PingGet))
-
-	e.POST("/agent/register", handler.Handle(d, handler.RegisterPost))
+	route.InitRoutes(e, d)
 
 	// Graceful shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)

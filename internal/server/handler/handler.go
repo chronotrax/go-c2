@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"github.com/chronotrax/go-c2/internal/model"
+	"github.com/chronotrax/go-c2/internal/server/model"
+
 	"github.com/labstack/echo/v4"
 )
 

@@ -8,6 +8,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+// Connect gets connection to SQLite3 database.
 func Connect(migrations embed.FS, dbName string) *sqlx.DB {
 	db := sqlx.MustConnect("sqlite", dbName)
 
