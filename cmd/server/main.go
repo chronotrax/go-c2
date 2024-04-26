@@ -39,7 +39,7 @@ func main() {
 	logging.InitLogging(e)
 
 	// Dependencies
-	agentDB := sqliteDB.Connect(embedMigrations, "db.sqlite")
+	agentDB := sqliteDB.Connect(embedMigrations, conf.DBName)
 	d := handler.NewDepends(sqliteDB.NewAgentDB(agentDB))
 
 	// Routes
