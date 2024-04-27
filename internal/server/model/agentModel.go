@@ -1,8 +1,6 @@
 package model
 
 import (
-	"errors"
-	"fmt"
 	"net"
 
 	"github.com/google/uuid"
@@ -14,31 +12,25 @@ type Agent struct {
 	IP net.IP    `json:"ip"`
 }
 
-// newAgent is an Agent constructor.
-func newAgent(id uuid.UUID, ip net.IP) *Agent {
+// NewAgent is an Agent constructor.
+func NewAgent(id uuid.UUID, ip net.IP) *Agent {
 	return &Agent{
 		ID: id,
 		IP: ip,
 	}
 }
 
-// ParseAgentModel Parses and validates Agent from string inputs.
-func ParseAgentModel(id, ip string) (*Agent, error) {
-	newID, err := uuid.Parse(id)
-	if err != nil || newID == uuid.Nil || newID.String() == "" {
-		return nil, fmt.Errorf("failed to parse agent ID: %w", err)
-	}
-
-	newIP := net.ParseIP(ip)
-	if newIP == nil {
-		return nil, errors.New("invalid agent IP")
-	}
-
-	return newAgent(newID, newIP), nil
-}
-
 // AgentDB is a database abstraction interface for an Agent database.
 type AgentDB interface {
 	// Insert inserts Agent into the database.
-	Insert(*Agent) error
+	Insert(*Agent) (rowsAffected int64, err error)
+
+	// Exists checks if Agent with id exists in the database.
+	Exists(uuid.UUID) (exists bool, err error)
+
+	// Get gets the Agent with id from the database.
+	Get(uuid.UUID) (*Agent, error)
+
+	// Delete deletes Agent from the database.
+	Delete(id uuid.UUID) (rowsAffected int64, err error)
 }

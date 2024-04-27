@@ -1,8 +1,8 @@
 -- +goose up
 CREATE TABLE agents
 (
-    id STRING PRIMARY KEY,
-    ip STRING
+    id STRING NOT NULL PRIMARY KEY,
+    ip STRING NOT NULL 
 );
 
 -- +goose down

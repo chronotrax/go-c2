@@ -1,0 +1,27 @@
+### SETUP: register agent
+POST localhost:8080/agent/register/6834d229-3c16-45af-b492-ef26ca5d6770
+
+### Valid command POST
+POST localhost:8080/server/command/6834d229-3c16-45af-b492-ef26ca5d6770
+Content-Type: application/json
+
+{
+  "command": "Hello World!"
+}
+
+### Valid command POST all
+POST localhost:8080/server/command
+Content-Type: application/json
+
+{
+  "command": "Hello World!"
+}
+
+### Valid command GET
+GET localhost:8080/agent/command/6834d229-3c16-45af-b492-ef26ca5d6770
+
+### Invalid command GET: UUID does not exist
+GET localhost:8080/agent/command/6834d229-3c16-45af-b492-ef26ca5d6771
+
+### Valid command DELETE
+DELETE localhost:8080/server/command/6834d229-3c16-45af-b492-ef26ca5d6770

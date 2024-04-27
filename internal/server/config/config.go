@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+//goland:noinspection GoUnnecessarilyExportedIdentifiers
 type Config struct {
 	Debug  bool   `mapstructure:"DEBUG"`
 	Port   int    `mapstructure:"PORT"`

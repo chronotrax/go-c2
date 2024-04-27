@@ -1,31 +1,14 @@
 ### Valid agent register
-POST localhost:8080/agent/register
-Content-Type: application/json
-
-{
-  "id": "6834d229-3c16-45af-b492-ef26ca5d6770"
-}
+POST localhost:8080/agent/register/6834d229-3c16-45af-b492-ef26ca5d6770
 
 ### Invalid agent register: id too short
-POST localhost:8080/agent/register
-Content-Type: application/json
-
-{
-"id": "6834d229-3c16-45af-b492-ef26ca5d677"
-}
+POST localhost:8080/agent/register/6834d229-3c16-45af-b492-ef26ca5d677
 
 ### Invalid agent register: id invalid char
-POST localhost:8080/agent/register
-Content-Type: application/json
+POST localhost:8080/agent/register/6834d229-3c16-45af-b492-ef26ca5d677x
 
-{
-  "id": "6834d229-3c16-45af-b492-ef26ca5d677x"
-}
+### Valid agent delete
+DELETE localhost:8080/server/agent/6834d229-3c16-45af-b492-ef26ca5d6770
 
-### Invalid agent register: bad params format
-POST localhost:8080/agent/register
-Content-Type: application/json
-
-{
-  "id: "6834d229-3c16-45af-b492-ef26ca5d677x"
-}
+### Invalid agent delete
+DELETE localhost:8080/server/agent/6834d229-3c16-45af-b492-ef26ca5d677

@@ -12,7 +12,7 @@ import (
 func Connect(migrations embed.FS, dbName string) *sqlx.DB {
 	db := sqlx.MustConnect("sqlite", dbName)
 
-	// run goose migrations
+	// Run goose migrations
 	goose.SetBaseFS(migrations)
 	if err := goose.SetDialect("sqlite3"); err != nil {
 		panic(err)

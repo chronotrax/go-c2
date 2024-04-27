@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"embed"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -11,16 +10,15 @@ import (
 	"time"
 
 	"github.com/chronotrax/go-c2/internal/server/config"
+	"github.com/chronotrax/go-c2/internal/server/embed"
 	"github.com/chronotrax/go-c2/internal/server/handler"
 	"github.com/chronotrax/go-c2/internal/server/logging"
 	"github.com/chronotrax/go-c2/internal/server/model/sqliteDB"
 	"github.com/chronotrax/go-c2/internal/server/route"
+	"github.com/chronotrax/go-c2/pkg/msgqueue"
 
 	"github.com/labstack/echo/v4"
 )
-
-//go:embed migrations/*.sql
-var embedMigrations embed.FS
 
 func main() {
 	// Config
@@ -39,8 +37,9 @@ func main() {
 	logging.InitLogging(e)
 
 	// Dependencies
-	agentDB := sqliteDB.Connect(embedMigrations, conf.DBName)
-	d := handler.NewDepends(sqliteDB.NewAgentDB(agentDB))
+	agentDB := sqliteDB.Connect(embed.EmbededMigrations, conf.DBName)
+	msgQueue := msgqueue.NewMsgQueue()
+	d := handler.NewDepends(sqliteDB.NewAgentDB(agentDB), msgQueue)
 
 	// Routes
 	route.InitRoutes(e, d)

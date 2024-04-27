@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/chronotrax/go-c2/internal/server/model"
+	"github.com/chronotrax/go-c2/pkg/msgqueue"
 
 	"github.com/labstack/echo/v4"
 )
@@ -9,11 +10,12 @@ import (
 // Depends lists the dependencies needed for handlers.
 type Depends struct {
 	AgentStore model.AgentDB
+	MsgQueue   msgqueue.MsgQueue
 }
 
 // NewDepends is a Depends constructor.
-func NewDepends(store model.AgentDB) *Depends {
-	return &Depends{AgentStore: store}
+func NewDepends(store model.AgentDB, msgQ msgqueue.MsgQueue) *Depends {
+	return &Depends{AgentStore: store, MsgQueue: msgQ}
 }
 
 // AppHandler is a custom [echo.HandlerFunc] handler that includes this app's dependencies.
