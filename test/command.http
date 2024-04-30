@@ -25,3 +25,12 @@ GET localhost:8080/agent/command/6834d229-3c16-45af-b492-ef26ca5d6771
 
 ### Valid command DELETE
 DELETE localhost:8080/server/command/6834d229-3c16-45af-b492-ef26ca5d6770
+
+### TEST
+POST localhost:8080/server/command/6e145fd3-faae-4d80-9bbe-fd0db30bcc1b
+Content-Type: application/json
+
+{
+  "command": "ls",
+  "args": ["-l", "-a"]
+}

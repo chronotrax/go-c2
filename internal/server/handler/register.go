@@ -12,7 +12,7 @@ import (
 )
 
 // POST /agent/register/:id
-func RegisterPost(d *Depends, c echo.Context) error {
+func AgentRegisterPost(d *Depends, c echo.Context) error {
 	// Get ID from URL
 	idStr := c.Param("id")
 	id, err := util.ValidateUUID(idStr)
@@ -47,7 +47,7 @@ func RegisterPost(d *Depends, c echo.Context) error {
 
 	// Register with message queue
 	d.MsgQueue.Register(agent.ID)
-	return c.NoContent(http.StatusNoContent)
+	return c.NoContent(http.StatusOK)
 }
 
 // DELETE /server/agent/:id
@@ -74,5 +74,5 @@ func AgentDelete(d *Depends, c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, internalServerError)
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return c.NoContent(http.StatusOK)
 }

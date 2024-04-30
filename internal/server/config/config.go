@@ -19,7 +19,7 @@ func (c Config) String() string {
 
 var defaultConfig = Config{
 	Debug:  false,
-	Port:   80,
+	Port:   8080,
 	DBName: "db.sqlite",
 }
 

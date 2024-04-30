@@ -9,13 +9,14 @@ import (
 
 // Depends lists the dependencies needed for handlers.
 type Depends struct {
-	AgentStore model.AgentDB
-	MsgQueue   msgqueue.MsgQueue
+	MsgQueue     msgqueue.MessageQueue
+	AgentStore   model.AgentStore
+	CommandStore model.CommandStore
 }
 
 // NewDepends is a Depends constructor.
-func NewDepends(store model.AgentDB, msgQ msgqueue.MsgQueue) *Depends {
-	return &Depends{AgentStore: store, MsgQueue: msgQ}
+func NewDepends(msgQ msgqueue.MessageQueue, agentStore model.AgentStore, cmdStore model.CommandStore) *Depends {
+	return &Depends{MsgQueue: msgQ, AgentStore: agentStore, CommandStore: cmdStore}
 }
 
 // AppHandler is a custom [echo.HandlerFunc] handler that includes this app's dependencies.

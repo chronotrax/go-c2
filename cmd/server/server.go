@@ -20,6 +20,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// TODO: use HTTP2 and TLS
+// TODO: GET command output from DB
+
 func main() {
 	// Config
 	conf, err := config.InitConfig()
@@ -37,9 +40,9 @@ func main() {
 	logging.InitLogging(e)
 
 	// Dependencies
-	agentDB := sqliteDB.Connect(embed.EmbededMigrations, conf.DBName)
-	msgQueue := msgqueue.NewMsgQueue()
-	d := handler.NewDepends(sqliteDB.NewAgentDB(agentDB), msgQueue)
+	db := sqliteDB.Connect(embed.EmbededMigrations, conf.DBName)
+	msgQueue := msgqueue.NewMessageQueue()
+	d := handler.NewDepends(msgQueue, sqliteDB.NewAgentDB(db), sqliteDB.NewCommandDB(db))
 
 	// Routes
 	route.InitRoutes(e, d)

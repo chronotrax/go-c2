@@ -3,13 +3,14 @@ package handler
 import (
 	"net/http"
 
+	"github.com/chronotrax/go-c2/internal/server/model"
 	"github.com/chronotrax/go-c2/internal/util"
 	"github.com/chronotrax/go-c2/pkg/msgqueue"
 	"github.com/labstack/echo/v4"
 )
 
 // POST /server/command/:id
-func CommandPost(d *Depends, c echo.Context) error {
+func ServerCommandPost(d *Depends, c echo.Context) error {
 	// Get ID from URL
 	idStr := c.Param("id")
 	id, err := util.ValidateUUID(idStr)
@@ -19,38 +20,65 @@ func CommandPost(d *Depends, c echo.Context) error {
 
 	// Get command from body
 	params := new(struct {
-		Command string `json:"command"`
+		Command string   `json:"command"`
+		Args    []string `json:"args"`
 	})
 	if err = c.Bind(params); err != nil {
 		return c.JSON(http.StatusBadRequest, newParseError(err))
 	}
 
 	// Append command to message queue
-	err = d.MsgQueue.AddMsg(id, msgqueue.NewMsg(params.Command))
+	err = d.MsgQueue.AddMsg(id, msgqueue.NewMessage(params.Command, params.Args...))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": err.Error()})
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return c.NoContent(http.StatusOK)
 }
 
 // POST /server/command
-func CommandAllPost(d *Depends, c echo.Context) error {
+func ServerCommandPostAll(d *Depends, c echo.Context) error {
 	// Get command from body
 	params := new(struct {
-		Command string `json:"command"`
+		Command string   `json:"command"`
+		Args    []string `json:"args"`
 	})
 	if err := c.Bind(params); err != nil {
 		return c.JSON(http.StatusBadRequest, newParseError(err))
 	}
 
-	// Append command to message queues
-	d.MsgQueue.AddMsgAll(msgqueue.NewMsg(params.Command))
-	return c.NoContent(http.StatusNoContent)
+	// Append command to all message queues
+	d.MsgQueue.AddMsgAll(msgqueue.NewMessage(params.Command, params.Args...))
+	return c.NoContent(http.StatusOK)
+}
+
+// DELETE /server/command/:id
+func ServerCommandDelete(d *Depends, c echo.Context) error {
+	// Get ID from URL
+	idStr := c.Param("id")
+	id, err := util.ValidateUUID(idStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, newParseError(err))
+	}
+
+	// Delete most recent command from message queue
+	err = d.MsgQueue.DeleteMsg(id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, echo.Map{"error": err.Error()})
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+// DELETE /server/command
+func ServerCommandDeleteAll(d *Depends, c echo.Context) error {
+	// Delete most recent command from all message queues
+	d.MsgQueue.DeleteMsgAll()
+	return c.NoContent(http.StatusOK)
 }
 
 // GET /agent/command/:id
-func CommandGet(d *Depends, c echo.Context) error {
+func AgentCommandGet(d *Depends, c echo.Context) error {
 	// Get ID from URL
 	idStr := c.Param("id")
 	id, err := util.ValidateUUID(idStr)
@@ -67,8 +95,8 @@ func CommandGet(d *Depends, c echo.Context) error {
 	return c.JSON(http.StatusOK, msg)
 }
 
-// DELETE /server/command/:id
-func CommandDelete(d *Depends, c echo.Context) error {
+// POST /agent/command/:id
+func AgentCommandPost(d *Depends, c echo.Context) error {
 	// Get ID from URL
 	idStr := c.Param("id")
 	id, err := util.ValidateUUID(idStr)
@@ -76,18 +104,23 @@ func CommandDelete(d *Depends, c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, newParseError(err))
 	}
 
-	// Delete most recent command from message queue
-	err = d.MsgQueue.DeleteMsg(id)
-	if err != nil {
-		return c.JSON(http.StatusNotFound, echo.Map{"error": err.Error()})
+	// Get command output from body
+	params := new(struct {
+		msgqueue.Message `json:"message"`
+		Output           string `json:"output"`
+	})
+	if err := c.Bind(params); err != nil {
+		return c.JSON(http.StatusBadRequest, newParseError(err))
 	}
 
-	return c.NoContent(http.StatusNoContent)
-}
+	// Convert to model
+	cmd := model.NewCommand(id, params.MsgID, params.Command, params.Args, params.Output)
 
-// DELETE /server/command
-func CommandDeleteAll(d *Depends, c echo.Context) error {
-	// Delete most recent command from message queues
-	d.MsgQueue.DeleteMsgAll()
-	return c.NoContent(http.StatusNoContent)
+	// Insert in db
+	rows, err := d.CommandStore.Insert(cmd)
+	if err != nil || rows != 1 {
+		return c.JSON(http.StatusInternalServerError, internalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
 }

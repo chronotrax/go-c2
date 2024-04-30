@@ -20,8 +20,8 @@ func NewAgent(id uuid.UUID, ip net.IP) *Agent {
 	}
 }
 
-// AgentDB is a database abstraction interface for an Agent database.
-type AgentDB interface {
+// AgentStore is a database abstraction interface for an Agent database.
+type AgentStore interface {
 	// Insert inserts Agent into the database.
 	Insert(*Agent) (rowsAffected int64, err error)
 

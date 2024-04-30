@@ -9,11 +9,11 @@ import (
 )
 
 func Test_msgQueue(t *testing.T) {
-	mq := NewMsgQueue()
+	mq := NewMessageQueue()
 	id := uuid.New()
-	msg1 := NewMsg("test1")
-	msg2 := NewMsg("test2")
-	msg3 := NewMsg("test3")
+	msg1 := NewMessage("test1")
+	msg2 := NewMessage("test2")
+	msg3 := NewMessage("test3")
 
 	// getting message when id not registered should error
 	_, err := mq.GetMsg(id)
@@ -64,17 +64,17 @@ func Test_msgQueue(t *testing.T) {
 
 	// should get an empty message
 	newMsg, err = mq.GetMsg(id)
-	if err != nil || !reflect.DeepEqual(newMsg, Msg{}) {
+	if err != nil || !reflect.DeepEqual(newMsg, Message{}) {
 		t.Error("GetMsg should have returned an error")
 	}
 }
 
 func Test_msgQueue_DiffAgents(t *testing.T) {
-	mq := NewMsgQueue()
+	mq := NewMessageQueue()
 	id1 := uuid.New()
 	id2 := uuid.New()
-	msg1 := NewMsg("test1")
-	msg2 := NewMsg("test2")
+	msg1 := NewMessage("test1")
+	msg2 := NewMessage("test2")
 
 	// add some messages
 	mq.Register(id1)
@@ -108,10 +108,10 @@ func Test_msgQueue_DiffAgents(t *testing.T) {
 }
 
 func Test_msgQueue_AddMsg(t *testing.T) {
-	mq := NewMsgQueue()
+	mq := NewMessageQueue()
 	wg := &sync.WaitGroup{}
 	id := uuid.New()
-	msg := NewMsg("test")
+	msg := NewMessage("test")
 
 	mq.Register(id)
 
@@ -140,11 +140,11 @@ func Test_msgQueue_AddMsg(t *testing.T) {
 }
 
 func Test_msgQueue_AddMsgAll(t *testing.T) {
-	mq := NewMsgQueue()
+	mq := NewMessageQueue()
 	wg := &sync.WaitGroup{}
 	id1 := uuid.New()
 	id2 := uuid.New()
-	msg := NewMsg("test")
+	msg := NewMessage("test")
 
 	// create 2 agents
 	mq.Register(id1)
@@ -172,10 +172,10 @@ func Test_msgQueue_AddMsgAll(t *testing.T) {
 }
 
 func Test_msgQueue_DeleteMsg(t *testing.T) {
-	mq := NewMsgQueue()
+	mq := NewMessageQueue()
 	id := uuid.New()
-	msg1 := NewMsg("test1")
-	msg2 := NewMsg("test2")
+	msg1 := NewMessage("test1")
+	msg2 := NewMessage("test2")
 
 	mq.Register(id)
 
@@ -220,11 +220,11 @@ func Test_msgQueue_DeleteMsg(t *testing.T) {
 }
 
 func Test_msgQueue_DeleteMsgAll(t *testing.T) {
-	mq := NewMsgQueue()
+	mq := NewMessageQueue()
 	id1 := uuid.New()
 	id2 := uuid.New()
-	msg1 := NewMsg("test1")
-	msg2 := NewMsg("test2")
+	msg1 := NewMessage("test1")
+	msg2 := NewMessage("test2")
 
 	mq.Register(id1)
 	mq.Register(id2)

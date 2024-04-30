@@ -49,7 +49,7 @@ func (d *AgentDB) Insert(agentModel *model.Agent) (rowsAffected int64, err error
 	const InsertAgent = `INSERT INTO agents (id, ip) VALUES (?, ?)`
 	result, err := d.DB.Exec(InsertAgent, a.ID, a.IP)
 	if err != nil {
-		slog.Error("failed to insert agent", slog.String("error", err.Error()))
+		slog.Error("failed to insert agent into database", slog.String("error", err.Error()))
 		return 0, err
 	}
 
@@ -93,7 +93,7 @@ func (d *AgentDB) Delete(id uuid.UUID) (rowsAffected int64, err error) {
 	const DeleteAgent = `DELETE FROM agents WHERE id = ?`
 	result, err := d.DB.Exec(DeleteAgent, id)
 	if err != nil {
-		slog.Error("failed to delete agent", slog.String("error", err.Error()))
+		slog.Error("failed to delete agent from database", slog.String("error", err.Error()))
 		return 0, err
 	}
 
