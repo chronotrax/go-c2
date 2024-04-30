@@ -1,24 +1,27 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"github.com/chronotrax/go-c2/pkg/msgqueue"
+	"github.com/google/uuid"
+)
 
 // A Command is a message sent to an agent with its response.
 type Command struct {
-	AgentID uuid.UUID `json:"agentID"`
-	MsgID   uuid.UUID `json:"msgID"`
-	Command string    `json:"command"`
-	Args    []string  `json:"args"`
-	Output  string    `json:"output"`
+	AgentID          uuid.UUID `json:"agentID"`
+	msgqueue.Message `json:"message"`
+	Output           string `json:"output"`
 }
 
 // NewCommand is a Command constructor.
 func NewCommand(agentID uuid.UUID, msgID uuid.UUID, command string, args []string, output string) *Command {
 	return &Command{
 		AgentID: agentID,
-		MsgID:   msgID,
-		Command: command,
-		Args:    args,
-		Output:  output,
+		Message: msgqueue.Message{
+			MsgID:   msgID,
+			Command: command,
+			Args:    args,
+		},
+		Output: output,
 	}
 }
 

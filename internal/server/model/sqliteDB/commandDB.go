@@ -43,13 +43,11 @@ func toDBCommand(c *model.Command) *command {
 // toModelCommand converts command to [model.Command].
 // Assumes command is a valid [model.Command].
 func toModelCommand(c *command) *model.Command {
-	return &model.Command{
-		AgentID: uuid.MustParse(c.AgentID),
-		MsgID:   uuid.MustParse(c.MsgID),
-		Command: c.Command,
-		Args:    strings.Split(c.Args, " "),
-		Output:  c.Output,
-	}
+	return model.NewCommand(uuid.MustParse(c.AgentID),
+		uuid.MustParse(c.MsgID),
+		c.Command,
+		strings.Split(c.Args, " "),
+		c.Output)
 }
 
 // Insert inserts the [model.Command] into the database.

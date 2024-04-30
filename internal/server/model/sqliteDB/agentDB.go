@@ -36,10 +36,7 @@ func toDBAgent(a *model.Agent) *agent {
 // toModelAgent converts agent to [model.Agent].
 // Assumes agent is a valid [model.Agent].
 func toModelAgent(a *agent) *model.Agent {
-	return &model.Agent{
-		ID: uuid.MustParse(a.ID),
-		IP: net.ParseIP(a.IP),
-	}
+	return model.NewAgent(uuid.MustParse(a.ID), net.ParseIP(a.IP))
 }
 
 // Insert inserts the [model.Agent] into the database.

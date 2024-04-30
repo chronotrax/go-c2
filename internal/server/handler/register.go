@@ -74,5 +74,10 @@ func AgentDelete(d *Depends, c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, internalServerError)
 	}
 
+	// Delete from message queue
+	d.MsgQueue.DeleteAgent(id)
+
+	// TODO: send stop message to agent
+
 	return c.NoContent(http.StatusOK)
 }

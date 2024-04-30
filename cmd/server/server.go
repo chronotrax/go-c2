@@ -22,6 +22,7 @@ import (
 
 // TODO: use HTTP2 and TLS
 // TODO: GET command output from DB
+// TODO: authentication
 
 func main() {
 	// Config

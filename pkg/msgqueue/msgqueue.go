@@ -25,6 +25,9 @@ type MessageQueue interface {
 	// Register creates a message queue for the agentID.
 	Register(agentID uuid.UUID)
 
+	// DeleteAgent deletes an agent from the message queue.
+	DeleteAgent(agentID uuid.UUID)
+
 	// AddMsg adds a [Message] to the agentID's queue.
 	// agentID must be registered before adding a [Message].
 	AddMsg(agentID uuid.UUID, msg Message) error
@@ -75,6 +78,11 @@ func newNotRegisteredErr(id uuid.UUID) error {
 // Register creates a message queue for the agentID.
 func (q *messageQueue) Register(id uuid.UUID) {
 	q.qMap.Store(id, newAgentQueue())
+}
+
+// DeleteAgent deletes an agent from the message queue.
+func (q *messageQueue) DeleteAgent(id uuid.UUID) {
+	q.qMap.Delete(id)
 }
 
 // AddMsg adds a [Message] to the agentID's queue.
